@@ -77,7 +77,7 @@ if not WGET_AT:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20250319.01'
+VERSION = '20250319.02'
 USER_AGENT = 'Mozilla/5.0 (X11; Linux i686; rv:124.0) Gecko/20100101 Firefox/124.0'
 TRACKER_ID = 'voiceofamerica'
 TRACKER_HOST = 'legacy-api.arpa.li'
@@ -302,7 +302,7 @@ project = Project(
     title=TRACKER_ID,
     project_html='''
         <img class="project-logo" alt="Project logo" src="https://wiki.archiveteam.org/images/2/2d/Voanews_icon.png" height="50px" title=""/>
-        <h2>Voice of America <span class="links"><a href="https://voanews.com/">Website</a> &middot; <a href="http://tracker.archiveteam.org/voiceofamerica/">Leaderboard</a> &middot; <a href="https://wiki.archiveteam.org/index.php/竹白">Wiki</a></span></h2>
+        <h2>Voice of America <span class="links"><a href="https://voanews.com/">Website</a> &middot; <a href="https://tracker.archiveteam.org/voiceofamerica/">Leaderboard</a> &middot; <a href="https://wiki.archiveteam.org/index.php/Voice_of_America">Wiki</a></span></h2>
         <p>Archiving Voice of America.</p>
     '''
 )

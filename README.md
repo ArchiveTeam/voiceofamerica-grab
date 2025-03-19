@@ -1,6 +1,6 @@
 # voiceofamerica-grab
 
-More information about the archiving project can be found on the ArchiveTeam wiki: [Voice of America](https://wiki.archiveteam.org/index.php?title=Voice of America)
+More information about the archiving project can be found on the ArchiveTeam wiki: [Voice of America](https://wiki.archiveteam.org/index.php?title=Voice_of_America)
 
 ## Setup instructions
 
