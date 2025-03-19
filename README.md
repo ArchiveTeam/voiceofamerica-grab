@@ -15,7 +15,7 @@ Data integrity is very important in Archive Team projects. Please note the follo
 * Only x64-based machines are supported. [ARM (used on Raspberry Pi and Apple Silicon Macs) is not currently supported](https://wiki.archiveteam.org/index.php/ArchiveTeam_Warrior#Can_I_run_the_Warrior_on_ARM_or_some_other_unusual_architecture?).
 * See the [Archive Team Wiki](https://wiki.archiveteam.org/index.php/ArchiveTeam_Warrior#Warrior_FAQ) for additional information.
 
-We strongly encourage you to join the IRC channel associated with this project in order to be informed about project updates and other important announcements, as well as to be reachable in the event of an issue. The Archive Team Wiki has [more information about IRC](https://wiki.archiveteam.org/index.php/Archiveteam:IRC). We can be found at hackint IRC [#usgovernment](https://webirc.hackint.org/#irc://irc.hackint.org/#usgovernment).
+We strongly encourage you to join the IRC channel associated with this project in order to be informed about project updates and other important announcements, as well as to be reachable in the event of an issue. The Archive Team Wiki has [more information about IRC](https://wiki.archiveteam.org/index.php/Archiveteam:IRC). We can be found at hackint IRC [#UncleSamsArchive](https://webirc.hackint.org/#irc://irc.hackint.org/#UncleSamsArchive).
 
 **If you have any questions or issues during setup, please review the wiki pages or contact us on IRC for troubleshooting information.**
 
@@ -51,6 +51,6 @@ Are you a developer? Help write code for us! Look at our [developer documentatio
 
 ### Other problems
 
-Have an issue not listed here? Join us on IRC and ask! We can be found at hackint IRC [#usgovernment](https://webirc.hackint.org/#irc://irc.hackint.org/#usgovernment).
+Have an issue not listed here? Join us on IRC and ask! We can be found at hackint IRC [#UncleSamsArchive](https://webirc.hackint.org/#irc://irc.hackint.org/#UncleSamsArchive).
 
 
