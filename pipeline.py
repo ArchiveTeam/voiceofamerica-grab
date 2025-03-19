@@ -77,7 +77,7 @@ if not WGET_AT:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20250319.02'
+VERSION = '20250319.03'
 USER_AGENT = 'Mozilla/5.0 (X11; Linux i686; rv:124.0) Gecko/20100101 Firefox/124.0'
 TRACKER_ID = 'voiceofamerica'
 TRACKER_HOST = 'legacy-api.arpa.li'
@@ -254,7 +254,7 @@ class WgetArgs(object):
         with open('voasites.txt', 'r') as f:
             sites = set()
             for line in f:
-                line = line.strip()
+                line = line.strip().lstrip('#')
                 if len(line) == 0:
                     continue
                 sites.add('.'.join(line.split('.')[-2:]))

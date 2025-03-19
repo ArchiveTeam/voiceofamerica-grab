@@ -28,8 +28,8 @@ local bad_items = {}
 local ids = {}
 
 local asset_patterns = {
-  ["^https?://([^/]*akamaized%.net/.+)$"]="asset",
-  ["^https?://(av%.voanews%.com/.+)$"]="asset",
+  --["^https?://([^/]*akamaized%.net/.+)$"]="asset",
+  --["^https?://(av%.voanews%.com/.+)$"]="asset",
   ["^https?://(gdb%.voanews%.com/.+)$"]="asset",
   ["^https?://(ssc%.[^/]*/.+)$"]="asset",
   ["^https?://(tags%.[^/]*/.+)$"]="asset",
@@ -49,14 +49,22 @@ end
 voasites_file:close()
 
 check_voasite = function(site)
-  local temp = string.match(site, "^www%.(.+)$")
-  if temp then
-    site = temp
+  local a, b = string.match(site, "^([^%.]+)%.(.+)$")
+  if a == "www" or a == "m" then
+    site = b
   end
+
   if voasites[site] then
     return true
   end
   return false
+end
+
+is_supported_media = function(s)
+  return string.match(s, "^https?://[^/]*akamaized%.net/.")
+    or string.match(s, "^https?://av%.voanews%.com/.")
+    or string.match(s, "^https?://voa%-video%.voanews%.eu/.")
+    or string.match(s, "^https?://voa%-audio%.voanews%.eu/.")
 end
 
 local retry_url = false
@@ -132,7 +140,7 @@ end
 set_item = function(url)
   found = find_item(url)
   if found then
-    local newcontext = {}
+    local newcontext = {["any_200"]=false}
     new_item_type = found["type"]
     new_item_value = found["value"]
     new_item_name = new_item_type .. ":" .. new_item_value
@@ -174,6 +182,10 @@ allowed = function(url, parenturl)
     return true
   end
 
+  if is_supported_media(url) then
+    return true
+  end
+
   if string.match(url, "^https?://facebook%.com/share")
     or string.match(url, "^https?://twitter%.com/share")
     or string.match(url, "^https?://web%.whatsapp%.com/send")
@@ -181,7 +193,10 @@ allowed = function(url, parenturl)
     or string.match(url, "^https?://line%.me/R/")
     or string.match(url, "^https?://timeline%.line%.me/social%-plugin/share")
     or string.match(url, "^https?://$")
-    or string.match(url, "^https?://a/$") then
+    or string.match(url, "^https?://a/$")
+    or string.match(url, "^https?://ssc%.")
+    or string.match(url, "^https?://[^/]*disqus%.com/")
+    or string.match(url, "^https?://gdb%.voanews%.com/Tealium%.aspx%?") then
     return false
   end
 
@@ -200,12 +215,16 @@ allowed = function(url, parenturl)
     return false
   end
 
-  if string.match(url, "^https?://[^/]*voa")
+  local is_voa = string.match(url, "^https?://[^/]*voa")
+    or string.match(url, "^https?://[^/]*ameri[ck]")
+
+  if is_voa
     and not check_voasite(string.match(url, "^https?://([^/]+)")) then
     error("Unknown VOA site found for URL " .. url .. ".")
   end
 
-  if not string.match(url, "^https?://[^/]*voa") then
+  if not is_voa
+    and not check_voasite(string.match(url, "^https?://([^/]+)")) then
     discover_item(discovered_outlinks, string.match(percent_encode_url(url), "^([^%s]+)"))
     return false
   end
@@ -434,18 +453,41 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     return result
   end
 
-  local function is_supported_media(s)
-    return string.match(s, "^https?://[^/]*akamaized%.net/.")
-      or string.match(s, "^https?://av%.voanews%.com/.")
+  if item_type == "article" then
+    for site, _ in pairs(voasites) do
+      extra = ""
+      if not string.match(site, "%..+%.") then
+        extra = "www."
+      end
+      check("https://" .. extra .. site .. "/a/" .. item_value .. ".html")
+    end
+  end
+
+  if string.match(url, "^https?://www%.voanews%.com/") then
+    local path = string.match(url, "^https?://[^/]+(/.*)$")
+    check("https://www.voanews.eu" .. path)
   end
 
   if allowed(url)
     and status_code < 300
     and (
-      item_type ~= "asset"
+      (
+        item_type ~= "asset"
+        and not is_supported_media(url)
+      )
       or string.match(url, "%.m3u8")
     ) then
     html = read_file(file)
+    html = string.gsub(html, "(<video [^>]+>)", function (s)
+      local sdkid = string.match(s, 'data%-sdkid="([0-9]+)"')
+      if sdkid then
+        if not ids[sdkid] then
+          return ""
+        end
+      end
+      return s
+    end)
+    html = string.gsub(html, '<a class="c%-mmp__fallback%-link" href="[^"]+"%s*>', "")
     for data in string.gmatch(html, "(<video [^>]+)") do
       local src = string.match(data, 'src="([^"]+)"')
       if not src then
@@ -457,16 +499,34 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     end
     local meta_tags = {}
     for data in string.gmatch(html, "(<meta [^>]+)") do
-      local name = string.match(data, 'name="([^"]+)"')
       local content = string.match(data, 'content="([^"]+)"')
-      if name and content then
-        meta_tags[name] = content
+      if content then
+        for _, key in pairs({"name", "property"}) do
+          local value = string.match(data, key .. '="([^"]+)"')
+          if value then
+            meta_tags[key .. "_" .. value] = content
+          end
+        end
       end
     end
-    if meta_tags["twitter:player:stream"]
-      or meta_tags["twitter:player:stream:content_type"] then
-      if not is_supported_media(meta_tags["twitter:player:stream"]) then
+    if meta_tags["name_twitter:player:stream"]
+      or meta_tags["name_twitter:player:stream:content_type"] then
+      if not is_supported_media(meta_tags["name_twitter:player:stream"]) then
         error("Unsupported media stream.")
+      end
+    end
+    local img_enhancer = string.match(html, "imgEnhancerBreakpoints%s*=%s*%[([0-9,%s]+)%];")
+    if img_enhancer then
+      if not meta_tags["property_og:image"] then
+        error("Could not find main image.")
+      end
+      if string.match(meta_tags["property_og:image"], "_w1200_") then
+        local a, b = string.match(meta_tags["property_og:image"], "^(.-_w)1200(_.+)$")
+        for num in string.gmatch(img_enhancer, "([0-9]+)") do
+          check(a .. num .. b)
+        end
+        a, b = string.match(meta_tags["property_og:image"], "^(https?://.-)_[^/%.]+(%.[a-zA-Z0-9]+)$")
+        check(a .. b)
       end
     end
     if string.match(url, "%.m3u8") then
@@ -514,10 +574,34 @@ wget.callbacks.write_to_warc = function(url, http_stat)
     error("No item name found.")
   end
   is_initial_url = false
+  if http_stat["statcode"] == 200 then
+    context["any_200"] = true
+  end
+  if http_stat["statcode"] == 301
+    and is_supported_media(url["url"]) then
+    ids[urlparse.absolute(url["url"], http_stat["newloc"])] = true
+  end
   if http_stat["statcode"] ~= 200
     and (
       http_stat["statcode"] ~= 301
-      or not string.match(url["url"], "^https://www.voanews.com/a/[0-9]+%.html")
+      or (
+        not (
+          string.match(url["url"], "^https://[^/]+/a/[0-9]+%.html")
+          and check_voasite(string.match(url["url"], "^https?://([^/]+)"))
+        )
+        and not ids[urlparse.absolute(url["url"], http_stat["newloc"])]
+      )
+    )
+    and (
+      http_stat["statcode"] ~= 404
+      or not (
+        string.match(url["url"], "^https://[^/]+/a/[0-9]+%.html")
+        and check_voasite(string.match(url["url"], "^https?://([^/]+)"))
+      )
+    )
+    and (
+      http_stat["statcode"] ~= 302
+      or not string.match(url["url"], "https?://www%.voacambodia%.com/")
     ) then
     retry_url = true
     return false
@@ -665,7 +749,8 @@ wget.callbacks.finish = function(start_time, end_time, wall_time, numurls, total
 end
 
 wget.callbacks.before_exit = function(exit_status, exit_status_string)
-  if killgrab then
+  if killgrab
+    or not context["any_200"] then
     return wget.exits.IO_FAIL
   end
   if abortgrab then
