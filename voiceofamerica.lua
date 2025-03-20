@@ -489,6 +489,14 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       end
       return s
     end)
+    html = string.gsub(html, '(<li class="subitem">.-</li>)', function (s)
+      local video_id = string.match(s, "FireAnalyticsTagEventOnDownload%([^,]+,[^,]+,%s+([0-9]+),")
+      if video_id
+        and video_id ~= item_value then
+        return ""
+      end
+      return s
+    end)
     html = string.gsub(html, '<a class="c%-mmp__fallback%-link" href="[^"]+"%s*>', "")
     for data in string.gmatch(html, "(<video [^>]+)") do
       local src = string.match(data, 'src="([^"]+)"')
