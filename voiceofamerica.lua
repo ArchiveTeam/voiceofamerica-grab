@@ -64,7 +64,9 @@ is_supported_media = function(s)
   return string.match(s, "^https?://[^/]*akamaized%.net/.")
     or string.match(s, "^https?://av%.voanews%.com/.")
     or string.match(s, "^https?://voa%-video%.voanews%.eu/.")
+    or string.match(s, "^https?://voa%-video%-hls%.voanews%.eu/.")
     or string.match(s, "^https?://voa%-audio%.voanews%.eu/.")
+    or string.match(s, "^https?://voa%-audio%-hls%.voanews%.eu/.")
 end
 
 local retry_url = false
