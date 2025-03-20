@@ -144,9 +144,11 @@ set_item = function(url)
     new_item_type = found["type"]
     new_item_value = found["value"]
     new_item_name = new_item_type .. ":" .. new_item_value
-    local post_id = string.match(new_item_value, ":([^:]+)$")
-    if new_item_name ~= item_name
-      and not ids[post_id] then
+    if new_item_name ~= item_name then
+      if item_name
+        and not context["any_200"] then
+        abort_item()
+      end
       ids = {}
       context = newcontext
       item_value = new_item_value
@@ -749,8 +751,10 @@ wget.callbacks.finish = function(start_time, end_time, wall_time, numurls, total
 end
 
 wget.callbacks.before_exit = function(exit_status, exit_status_string)
-  if killgrab
-    or not context["any_200"] then
+  if not context["any_200"] then
+    abort_item()
+  end
+  if killgrab then
     return wget.exits.IO_FAIL
   end
   if abortgrab then
