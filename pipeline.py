@@ -1,6 +1,7 @@
 # encoding=utf8
 import datetime
 from distutils.version import StrictVersion
+import gzip
 import hashlib
 import os
 import random
@@ -77,7 +78,7 @@ if not WGET_AT:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20250320.02'
+VERSION = '20250320.03'
 USER_AGENT = 'Mozilla/5.0 (X11; Linux i686; rv:124.0) Gecko/20100101 Firefox/124.0'
 TRACKER_ID = 'voiceofamerica'
 TRACKER_HOST = 'legacy-api.arpa.li'
@@ -148,6 +149,17 @@ class PrepareDirectories(SimpleTask):
 
         open('%(item_dir)s/%(warc_file_base)s.warc.gz' % item, 'w').close()
         open('%(item_dir)s/%(warc_file_base)s_data.txt' % item, 'w').close()
+
+
+class CheckIntegrity(SimpleTask):
+    def __init__(self):
+        SimpleTask.__init__(self, 'CheckIntegrity')
+
+    def process(self, item):
+        with gzip.open('%(item_dir)s/%(warc_file_base)s.warc.gz' % item, 'rb') as f:
+            while f.read(1024**2) != b'':
+                pass
+
 
 class MoveFiles(SimpleTask):
     def __init__(self):
@@ -324,6 +336,7 @@ pipeline = Pipeline(
             'concurrency': ItemValue('concurrency')
         }
     ),
+    CheckIntegrity(),
     SetBadUrls(),
     PrepareStatsForTracker(
         defaults={'downloader': downloader, 'version': VERSION},
