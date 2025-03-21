@@ -50,7 +50,7 @@ voasites_file:close()
 
 check_voasite = function(site)
   local a, b = string.match(site, "^([^%.]+)%.(.+)$")
-  if a == "www" or a == "m" then
+  if a == "www" or a == "m" or a == "www1" then
     site = b
   end
 
@@ -67,6 +67,7 @@ is_supported_media = function(s)
     or string.match(s, "^https?://voa%-video%-hls%.voanews%.eu/.")
     or string.match(s, "^https?://voa%-audio%.voanews%.eu/.")
     or string.match(s, "^https?://voa%-audio%-hls%.voanews%.eu/.")
+-- media.voanews.com
 end
 
 local retry_url = false
@@ -200,7 +201,15 @@ allowed = function(url, parenturl)
     or string.match(url, "^https?://a/$")
     or string.match(url, "^https?://ssc%.")
     or string.match(url, "^https?://[^/]*disqus%.com/")
-    or string.match(url, "^https?://gdb%.voanews%.com/Tealium%.aspx%?") then
+    or string.match(url, "^https?://gdb%.voanews%.com/Tealium%.aspx%?")
+    or string.match(url, "^https?://test%-ltr%.voanews%.eu/")
+    or string.match(url, "^https?://www%.voatibetanenglish%.com/")
+    or string.match(url, "^https?://morigin%.voanews%.eu/")
+    or string.match(url, "^https?://origin%-test%.voaindonesian%.org/")
+    or string.match(url, "^https?://voatv%.pangea%-cms%.com/")
+    or string.match(url, "^https?://im%-media%.voltron%.voanews%.com/")
+    or string.match(url, "^https?://[^/]*@")
+    or string.match(url, "^https?://media%.voltron%.voanews%.com/") then
     return false
   end
 
@@ -219,8 +228,21 @@ allowed = function(url, parenturl)
     return false
   end
 
-  local is_voa = string.match(url, "^https?://[^/]*voa")
+  local is_voa = (
+    string.match(url, "^https?://[^/]*voa")
     or string.match(url, "^https?://[^/]*ameri[ck]")
+  ) and not string.match(url, "^https?://docs%.voanews%.com/")
+    and not string.match(url, "^https?://direct%.vozdeamerica%.com/")
+    and not string.match(url, "^https?://blogs%.voanews%.com/")
+    and not string.match(url, "^https?://[^/]*golos%-ameriki%.ru/")
+    and not string.match(url, "^https?://www%.america%.gov/")
+    and not string.match(url, "^https?://america%.gov/")
+    and not string.match(url, "^https?://www%.american%.edu/")
+    and not string.match(url, "^https?://american%.edu/")
+    and not string.match(url, "^https?://wingsacrossamerica%.org/")
+    and not string.match(url, "^https?://[^/]*scientificamerican%.com/")
+    and not string.match(url, "^https?://author%.voanews%.com/")
+    and not string.match(url, "^https?://voachineseblog%.com/")
 
   if is_voa
     and not check_voasite(string.match(url, "^https?://([^/]+)")) then
