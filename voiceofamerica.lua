@@ -49,6 +49,9 @@ end
 voasites_file:close()
 
 check_voasite = function(site)
+  if site == nil then
+    return false
+  end
   local a, b = string.match(site, "^([^%.]+)%.(.+)$")
   if a == "www" or a == "m" or a == "www1" then
     site = b
@@ -209,7 +212,8 @@ allowed = function(url, parenturl)
     or string.match(url, "^https?://voatv%.pangea%-cms%.com/")
     or string.match(url, "^https?://im%-media%.voltron%.voanews%.com/")
     or string.match(url, "^https?://[^/]*@")
-    or string.match(url, "^https?://media%.voltron%.voanews%.com/") then
+    or string.match(url, "^https?://media%.voltron%.voanews%.com/")
+    or string.match(url, "^https?://middleeastvoices%.voanews%.com/") then
     return false
   end
 
@@ -232,6 +236,7 @@ allowed = function(url, parenturl)
     string.match(url, "^https?://[^/]*voa")
     or string.match(url, "^https?://[^/]*ameri[ck]")
   ) and not string.match(url, "^https?://docs%.voanews%.com/")
+    and not string.match(url, "^https?://docs%.voanews%.eu/")
     and not string.match(url, "^https?://direct%.vozdeamerica%.com/")
     and not string.match(url, "^https?://blogs%.voanews%.com/")
     and not string.match(url, "^https?://[^/]*golos%-ameriki%.ru/")
@@ -243,6 +248,10 @@ allowed = function(url, parenturl)
     and not string.match(url, "^https?://[^/]*scientificamerican%.com/")
     and not string.match(url, "^https?://author%.voanews%.com/")
     and not string.match(url, "^https?://voachineseblog%.com/")
+    and not string.match(url, "^https?://feeds%.voanews%.com/")
+    and not string.match(url, "^https?://weeklywonk%.newamerica%.net/")
+    and not string.match(url, "^https?://[^/]*amistadamerica%.org/")
+    and not string.match(url, "^https?://[^/]*uyghuramerican%.org/")
 
   if is_voa
     and not check_voasite(string.match(url, "^https?://([^/]+)")) then
@@ -635,7 +644,10 @@ wget.callbacks.write_to_warc = function(url, http_stat)
     )
     and (
       http_stat["statcode"] ~= 302
-      or not string.match(url["url"], "https?://www%.voacambodia%.com/")
+      or (
+        not string.match(url["url"], "^https?://www%.voacambodia%.com/")
+        and not string.match(url["url"], "^https?://www%.dandalinvoa%.com/")
+      )
     ) then
     retry_url = true
     return false
