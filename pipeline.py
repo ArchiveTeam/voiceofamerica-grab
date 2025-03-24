@@ -78,8 +78,8 @@ if not WGET_AT:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20250323.01'
-USER_AGENT = 'Mozilla/5.0 (X11; Linux i686; rv:124.0) Gecko/20100101 Firefox/124.0'
+VERSION = '20250324.01'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0'
 TRACKER_ID = 'voiceofamerica'
 TRACKER_HOST = 'legacy-api.arpa.li'
 MULTI_ITEM_SIZE = 100 # KEEP ONE
@@ -261,6 +261,7 @@ class WgetArgs(object):
             '--warc-header', 'x-wget-at-project-version: ' + VERSION,
             '--warc-header', 'x-wget-at-project-name: ' + TRACKER_ID,
             '--warc-dedup-url-agnostic',
+            '--secure-protocol', 'PFS'
         ]
 
         with open('voasites.txt', 'r') as f:
