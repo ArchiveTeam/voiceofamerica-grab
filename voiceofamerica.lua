@@ -31,6 +31,7 @@ local asset_patterns = {
   --["^https?://([^/]*akamaized%.net/.+)$"]="asset",
   --["^https?://(av%.voanews%.com/.+)$"]="asset",
   ["^https?://(gdb%.voanews%.com/.+)$"]="asset",
+  --["^https?://(media%.voanews%.com/.+)$"]="asset",
   ["^https?://(ssc%.[^/]*/.+)$"]="asset",
   ["^https?://(tags%.[^/]*/.+)$"]="asset",
   ["^https?://projects%.voanews%.com/([^/]*)"]="project"
@@ -70,7 +71,6 @@ is_supported_media = function(s)
     or string.match(s, "^https?://voa%-video%-hls%.voanews%.eu/.")
     or string.match(s, "^https?://voa%-audio%.voanews%.eu/.")
     or string.match(s, "^https?://voa%-audio%-hls%.voanews%.eu/.")
--- media.voanews.com
 end
 
 local retry_url = false
@@ -208,12 +208,15 @@ allowed = function(url, parenturl)
     or string.match(url, "^https?://test%-ltr%.voanews%.eu/")
     or string.match(url, "^https?://www%.voatibetanenglish%.com/")
     or string.match(url, "^https?://morigin%.voanews%.eu/")
+    or string.match(url, "^https?://morigin%.voapnn%.eu/")
     or string.match(url, "^https?://origin%-test%.voaindonesian%.org/")
-    or string.match(url, "^https?://voatv%.pangea%-cms%.com/")
     or string.match(url, "^https?://im%-media%.voltron%.voanews%.com/")
     or string.match(url, "^https?://[^/]*@")
     or string.match(url, "^https?://media%.voltron%.voanews%.com/")
-    or string.match(url, "^https?://middleeastvoices%.voanews%.com/") then
+    or string.match(url, "^https?://middleeastvoices%.voanews%.com/")
+    or string.match(url, "^https?://www%.voanews/")
+    or string.match(url, "^https?://gr%.voanews%.com/")
+    or string.match(url, "^https?://[^/]*voacep%.com/") then
     return false
   end
 
@@ -234,7 +237,7 @@ allowed = function(url, parenturl)
 
   local is_voa = (
     string.match(url, "^https?://[^/]*voa")
-    or string.match(url, "^https?://[^/]*ameri[ck]")
+    --or string.match(url, "^https?://[^/]*ameri[ck]")
   ) and not string.match(url, "^https?://docs%.voanews%.com/")
     and not string.match(url, "^https?://docs%.voanews%.eu/")
     and not string.match(url, "^https?://direct%.vozdeamerica%.com/")
@@ -247,11 +250,14 @@ allowed = function(url, parenturl)
     and not string.match(url, "^https?://wingsacrossamerica%.org/")
     and not string.match(url, "^https?://[^/]*scientificamerican%.com/")
     and not string.match(url, "^https?://author%.voanews%.com/")
-    and not string.match(url, "^https?://voachineseblog%.com/")
+    and not string.match(url, "^https?://[^/]*voachineseblog%.com/")
     and not string.match(url, "^https?://feeds%.voanews%.com/")
     and not string.match(url, "^https?://weeklywonk%.newamerica%.net/")
     and not string.match(url, "^https?://[^/]*amistadamerica%.org/")
     and not string.match(url, "^https?://[^/]*uyghuramerican%.org/")
+    and not string.match(url, "^https?://[^/]*pangea%-cms%.com/")
+    and not string.match(url, "^https?://[^/]*cscehub%.com/")
+    and not string.match(url, "^https?://community%.myvoa%.com/")
 
   if is_voa
     and not check_voasite(string.match(url, "^https?://([^/]+)")) then
