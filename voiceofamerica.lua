@@ -817,7 +817,8 @@ wget.callbacks.before_exit = function(exit_status, exit_status_string)
     return wget.exits.IO_FAIL
   end
   if abortgrab then
-    abort_item()
+    return wget.exits.IO_FAIL
+    --abort_item()
   end
   return exit_status
 end
