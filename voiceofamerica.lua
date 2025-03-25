@@ -633,6 +633,7 @@ wget.callbacks.write_to_warc = function(url, http_stat)
           and check_voasite(string.match(url["url"], "^https?://([^/]+)"))
         )
         and not ids[urlparse.absolute(url["url"], http_stat["newloc"])]
+        and not string.match(url["url"], "^https?://www%.voanews%.eu/a/")
       )
     )
     and (
