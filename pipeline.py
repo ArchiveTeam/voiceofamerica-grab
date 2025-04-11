@@ -78,11 +78,11 @@ if not WGET_AT:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20250327.02'
+VERSION = '20250411.01'
 USER_AGENT = 'Archive Team (https://wiki.archiveteam.org/; email archiveteam@archiveteam.org)'
 TRACKER_ID = 'voiceofamerica'
 TRACKER_HOST = 'legacy-api.arpa.li'
-MULTI_ITEM_SIZE = 100 # KEEP ONE
+MULTI_ITEM_SIZE = 100
 
 
 ###########################################################################

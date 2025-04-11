@@ -375,7 +375,8 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       url_ = string.gsub(url_, "&amp;", "&")
     end
     if string.match(url_, "^https?://gdb%.voanews%.com/[^/]+$")
-      and not string.match(url_, "_s%....?.?$") then
+      and not string.match(url_, "_s%....?.?$")
+      and not string.match(url_, "^https?://gdb%.voanews%.com/Tealium%.aspx%?") then
       local a, b = string.match(url_, "^(https?://.+)(%....?.?)$")
       check(a .. "_s" .. b)
     end
