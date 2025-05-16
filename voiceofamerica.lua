@@ -151,10 +151,6 @@ set_item = function(url)
     new_item_value = found["value"]
     new_item_name = new_item_type .. ":" .. new_item_value
     if new_item_name ~= item_name then
-      if item_name
-        and not context["any_200"] then
-        abort_item()
-      end
       ids = {}
       context = newcontext
       item_value = new_item_value
@@ -261,7 +257,7 @@ allowed = function(url, parenturl)
 
   if is_voa
     and not check_voasite(string.match(url, "^https?://([^/]+)")) then
-    error("Unknown VOA site found for URL " .. url .. ".")
+    --error("Unknown VOA site found for URL " .. url .. ".")
   end
 
   if not is_voa
@@ -811,15 +807,11 @@ wget.callbacks.finish = function(start_time, end_time, wall_time, numurls, total
 end
 
 wget.callbacks.before_exit = function(exit_status, exit_status_string)
-  if not context["any_200"] then
-    abort_item()
-  end
   if killgrab then
     return wget.exits.IO_FAIL
   end
   if abortgrab then
-    return wget.exits.IO_FAIL
-    --abort_item()
+    abort_item()
   end
   return exit_status
 end
