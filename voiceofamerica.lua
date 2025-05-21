@@ -662,6 +662,10 @@ wget.callbacks.write_to_warc = function(url, http_stat)
     return false
   end
   if http_stat["len"] == 0
+    and not (
+      http_stat["statcode"] == 200
+      and string.match(url["url"], "[%?&]wjs=1$")
+    )
     and http_stat["statcode"] < 300 then
     retry_url = true
     return false
@@ -707,7 +711,8 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
     if status_code == 403 then
       maxtries = 10
     end
-    if status_code == 404 then
+    if status_code == 404
+      or status_code == 500 then
       tries = maxtries + 1
     end
     if tries > maxtries then
